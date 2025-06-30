@@ -1,1 +1,87 @@
-<h2>لعبة XO - 5x5</h2><p>واجهة تجريبية...</p>
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>XO 5x5</title>
+  <style>
+    body { font-family: Tahoma; text-align: center; background-color: #fff; margin: 0; padding: 20px; }
+    h1 { color: #333; }
+    table { margin: auto; border-collapse: collapse; }
+    td {
+      width: 80px; height: 80px; font-size: 36px; font-weight: bold;
+      border: 2px solid #4CAF50; text-align: center; cursor: pointer;
+    }
+    #status { margin-top: 20px; font-size: 20px; color: #2196F3; }
+    button { margin-top: 20px; padding: 10px 20px; font-size: 18px; border: none; background: #2196F3; color: white; border-radius: 8px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>XO - 5x5</h1>
+  <table id="board"></table>
+  <div id="status">دور اللاعب X</div>
+  <button onclick="resetGame()">إعادة اللعب</button>
+
+  <script>
+    const board = document.getElementById('board');
+    const status = document.getElementById('status');
+    let currentPlayer = 'X';
+    let gameOver = false;
+    let cells = [];
+
+    function checkWinner() {
+      const lines = [
+        [0,1,2],[3,4,5],[6,7,8], // rows
+        [0,3,6],[1,4,7],[2,5,8], // cols
+        [0,4,8],[2,4,6] // diagonals
+      ];
+      for (const [a,b,c] of lines) {
+        if (cells[a] && cells[a] === cells[b] && cells[a] === cells[c]) {
+          status.textContent = `اللاعب ${cells[a]} فاز!`;
+          gameOver = true;
+          return;
+        }
+      }
+      if (!cells.includes("")) {
+        status.textContent = "تعادل!";
+        gameOver = true;
+      }
+    }
+
+    function cellClick(index) {
+      if (cells[index] || gameOver) return;
+      cells[index] = currentPlayer;
+      render();
+      checkWinner();
+      currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+      if (!gameOver) status.textContent = `دور اللاعب ${currentPlayer}`;
+    }
+
+    function render() {
+      board.innerHTML = "";
+      for (let i = 0; i < 3; i++) {
+        const row = document.createElement("tr");
+        for (let j = 0; j < 3; j++) {
+          const index = i * 3 + j;
+          const cell = document.createElement("td");
+          cell.textContent = cells[index];
+          cell.onclick = () => cellClick(index);
+          row.appendChild(cell);
+        }
+        board.appendChild(row);
+      }
+    }
+
+    function resetGame() {
+      cells = Array(9).fill("");
+      currentPlayer = 'X';
+      gameOver = false;
+      status.textContent = "دور اللاعب X";
+      render();
+    }
+
+    resetGame();
+  </script>
+</body>
+</html>
